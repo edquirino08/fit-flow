@@ -1,3 +1,12 @@
 # Local-only: disabled skills for lean configuration
 # These skills are kept in the repository but disabled locally
 .disabled/
+
+# Fit Flow app
+node_modules/
+dist/
+frontend/dist/
+packages/domain/dist/
+.env
+.env.local
+*.log

@@ -1,0 +1,11 @@
+{
+  "name": "fit-flow",
+  "private": true,
+  "workspaces": ["frontend", "packages/*"],
+  "scripts": {
+    "dev": "npm run dev -w frontend",
+    "build": "npm run build -w @fit-flow/domain && npm run build -w frontend",
+    "test": "npm run test -w @fit-flow/domain",
+    "lint": "npm run lint -w frontend"
+  }
+}
