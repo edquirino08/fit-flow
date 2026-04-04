@@ -18,7 +18,10 @@ export function WorkoutsListPage() {
         .select("id,title,created_at,updated_at")
         .order("updated_at", { ascending: false });
       if (error) throw error;
-      return data as Pick<WorkoutRow, "id" | "title" | "created_at" | "updated_at">[];
+      return data as Pick<
+        WorkoutRow,
+        "id" | "title" | "created_at" | "updated_at"
+      >[];
     },
   });
 
@@ -43,8 +46,10 @@ export function WorkoutsListPage() {
     <div className="mx-auto max-w-2xl px-4 py-10">
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Suas fichas</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">
+            Suas fichas
+          </h1>
+          <p className="text-sm text-neutral-500">
             Toque para editar · PDF na tela do treino
           </p>
         </div>
@@ -53,14 +58,14 @@ export function WorkoutsListPage() {
             type="button"
             onClick={() => create.mutate()}
             disabled={create.isPending}
-            className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+            className="rounded-xl bg-fit-coral px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-fit-coral-hover disabled:opacity-50"
           >
             {create.isPending ? "…" : "Nova ficha"}
           </button>
           <button
             type="button"
             onClick={() => signOut()}
-            className="rounded-xl border border-slate-700 px-4 py-2 text-sm text-slate-300 hover:bg-slate-800"
+            className="rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-700 shadow-sm hover:border-neutral-300"
           >
             Sair
           </button>
@@ -68,17 +73,17 @@ export function WorkoutsListPage() {
       </header>
 
       {create.isError ? (
-        <p className="mt-4 text-sm text-rose-400">
+        <p className="mt-4 text-sm text-rose-600">
           {(create.error as Error).message}
         </p>
       ) : null}
 
       <ul className="mt-8 space-y-4">
         {isLoading ? (
-          <li className="text-slate-500">Carregando…</li>
+          <li className="text-neutral-500">Carregando…</li>
         ) : null}
         {!isLoading && workouts?.length === 0 ? (
-          <li className="rounded-2xl border border-dashed border-slate-700 p-8 text-center text-slate-500">
+          <li className="rounded-2xl border border-dashed border-neutral-300 bg-white/60 p-8 text-center text-neutral-500">
             Nenhuma ficha ainda. Crie uma para começar.
           </li>
         ) : null}
@@ -86,10 +91,10 @@ export function WorkoutsListPage() {
           <li key={w.id}>
             <Link
               to={`/workouts/${w.id}`}
-              className="block rounded-2xl border border-slate-800 bg-slate-900/50 p-4 transition hover:border-emerald-500/30 hover:bg-slate-900"
+              className="block rounded-2xl border border-neutral-200 bg-white p-4 shadow-[0_4px_20px_rgba(0,0,0,0.06)] transition hover:border-fit-coral/35 hover:shadow-md"
             >
-              <div className="font-medium text-white">{w.title}</div>
-              <div className="text-xs text-slate-500">
+              <div className="font-medium text-neutral-900">{w.title}</div>
+              <div className="text-xs text-neutral-500">
                 Atualizado{" "}
                 {new Date(w.updated_at).toLocaleString("pt-BR", {
                   dateStyle: "short",

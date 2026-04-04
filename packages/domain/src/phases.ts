@@ -19,10 +19,32 @@ export const PHASE_DEFINITIONS: readonly PhaseDefinition[] = [
   { id: "work", label: "Trabalho", defaultPct: 1 },
 ] as const;
 
+/** Default rep prescription per phase when `reps` is not set on the toggle. */
+export const DEFAULT_PHASE_REPS: Record<PhaseId, string> = {
+  aq1: "15",
+  aq2: "10",
+  aj1: "4-6",
+  aj2: "4-6",
+  work: "6-10",
+};
+
+/** Default number of sets per phase when `sets` is not set on the toggle. */
+export const DEFAULT_PHASE_SETS: Record<PhaseId, number> = {
+  aq1: 1,
+  aq2: 1,
+  aj1: 1,
+  aj2: 1,
+  work: 1,
+};
+
 export type PhaseToggle = {
   enabled: boolean;
   /** Override default percentage (0–1). If omitted, uses preset default. */
   pct?: number;
+  /** Rep range or count (e.g. "15", "4-6"). If omitted, uses DEFAULT_PHASE_REPS. */
+  reps?: string;
+  /** Number of sets. If omitted, uses DEFAULT_PHASE_SETS. */
+  sets?: number;
 };
 
 export type PhasesConfig = Record<PhaseId, PhaseToggle>;
@@ -37,6 +59,18 @@ export function defaultPhasesConfig(overrides?: Partial<PhasesConfig>): PhasesCo
   };
   if (!overrides) return base;
   return { ...base, ...overrides };
+}
+
+export function repsForPhase(id: PhaseId, phases: PhasesConfig): string {
+  const raw = phases[id]?.reps?.trim();
+  if (raw) return raw;
+  return DEFAULT_PHASE_REPS[id];
+}
+
+export function setsForPhase(id: PhaseId, phases: PhasesConfig): number {
+  const val = phases[id]?.sets;
+  if (val != null && Number.isFinite(val) && val > 0) return val;
+  return DEFAULT_PHASE_SETS[id];
 }
 
 function pctForPhase(id: PhaseId, config: PhasesConfig): number {
@@ -54,6 +88,8 @@ export type ComputedPhaseLoad = {
   label: string;
   kg: number | null;
   enabled: boolean;
+  reps: string;
+  sets: number;
 };
 
 export type ComputeOptions = {
@@ -75,15 +111,17 @@ export function computePhaseLoads(
   return PHASE_ORDER.map((id) => {
     const toggle = phases[id];
     const def = PHASE_DEFINITIONS.find((p) => p.id === id)!;
+    const reps = repsForPhase(id, phases);
+    const sets = setsForPhase(id, phases);
     if (!toggle.enabled) {
-      return { id, label: def.label, kg: null, enabled: false };
+      return { id, label: def.label, kg: null, enabled: false, reps, sets };
     }
     if (final == null) {
-      return { id, label: def.label, kg: null, enabled: true };
+      return { id, label: def.label, kg: null, enabled: true, reps, sets };
     }
     const pct = pctForPhase(id, phases);
     const raw = id === "work" ? final : final * pct;
-    const kg = id === "work" ? roundToStep(raw, step) : roundToStep(raw, step);
-    return { id, label: def.label, kg, enabled: true };
+    const kg = id === "work" ? raw : roundToStep(raw, step);
+    return { id, label: def.label, kg, enabled: true, reps, sets };
   });
 }

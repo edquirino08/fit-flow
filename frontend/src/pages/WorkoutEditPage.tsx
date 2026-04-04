@@ -220,39 +220,39 @@ export function WorkoutEditPage() {
 
   if (workoutQuery.isLoading) {
     return (
-      <div className="px-4 py-16 text-center text-slate-500">Carregando…</div>
+      <div className="px-4 py-16 text-center text-neutral-500">Carregando…</div>
     );
   }
   if (workoutQuery.isError || !id) {
     return (
-      <div className="px-4 py-16 text-center text-rose-400">
+      <div className="px-4 py-16 text-center text-rose-600">
         Não foi possível carregar esta ficha.
       </div>
     );
   }
   if (!hydrated) {
     return (
-      <div className="px-4 py-16 text-center text-slate-500">Carregando…</div>
+      <div className="px-4 py-16 text-center text-neutral-500">Carregando…</div>
     );
   }
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <div className="flex flex-wrap items-center gap-2 text-sm text-slate-500">
-        <Link to="/" className="hover:text-emerald-400">
+      <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-500">
+        <Link to="/" className="font-medium text-fit-coral hover:underline">
           ← Fichas
         </Link>
       </div>
       <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <label className="text-xs font-medium text-slate-500">
+          <label className="text-xs font-medium text-neutral-500">
             Título da ficha
           </label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-lg font-semibold text-white focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="mt-1 w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-lg font-semibold text-neutral-900 shadow-sm focus:border-fit-coral focus:outline-none focus:ring-2 focus:ring-fit-coral/20"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -260,21 +260,21 @@ export function WorkoutEditPage() {
             type="button"
             onClick={() => saveMutation.mutate()}
             disabled={saveMutation.isPending}
-            className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-50"
+            className="rounded-xl bg-fit-coral px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-fit-coral-hover disabled:opacity-50"
           >
             {saveMutation.isPending ? "Salvando…" : "Salvar"}
           </button>
           <button
             type="button"
             onClick={() => void handlePdf()}
-            className="rounded-xl border border-slate-600 px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+            className="rounded-xl border border-neutral-200 bg-white px-4 py-2 text-sm text-neutral-700 shadow-sm hover:border-neutral-300"
           >
             Exportar PDF
           </button>
         </div>
       </div>
       {saveMutation.isError ? (
-        <p className="mt-2 text-sm text-rose-400">
+        <p className="mt-2 text-sm text-rose-600">
           {(saveMutation.error as Error).message}
         </p>
       ) : null}
@@ -294,12 +294,12 @@ export function WorkoutEditPage() {
       <button
         type="button"
         onClick={addExercise}
-        className="mt-6 w-full rounded-2xl border border-dashed border-slate-700 py-4 text-sm text-slate-400 hover:border-emerald-500/40 hover:text-emerald-300"
+        className="mt-6 w-full rounded-2xl border border-dashed border-neutral-300 bg-white/50 py-4 text-sm text-neutral-500 hover:border-fit-coral/50 hover:text-fit-coral"
       >
         + Adicionar exercício
       </button>
 
-      <div className="mt-12 border-t border-slate-800 pt-8">
+      <div className="mt-12 border-t border-neutral-200 pt-8">
         <button
           type="button"
           onClick={() => {
@@ -307,7 +307,7 @@ export function WorkoutEditPage() {
               deleteWorkout.mutate();
             }
           }}
-          className="text-sm text-rose-400/90 hover:text-rose-300"
+          className="text-sm text-rose-600 hover:text-rose-500"
         >
           Excluir ficha
         </button>

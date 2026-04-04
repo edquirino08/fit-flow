@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
   cellHead: { flex: 1, fontSize: 7, color: "#94a3b8", textTransform: "uppercase" },
   chip: {
     fontSize: 7,
-    backgroundColor: "#ecfdf5",
-    color: "#047857",
+    backgroundColor: "#ffe8e5",
+    color: "#c2410c",
     paddingHorizontal: 4,
     paddingVertical: 2,
     marginRight: 4,
@@ -82,6 +82,26 @@ export function WorkoutPdfDocument({ sheet }: { sheet: WorkoutSheet }) {
                 {loads.map((l) => (
                   <Text key={l.id} style={styles.cell}>
                     {l.enabled ? fmtKg(l.kg) : "—"}
+                  </Text>
+                ))}
+              </View>
+              <Text style={{ marginTop: 4, fontSize: 7, color: "#94a3b8" }}>
+                Repetições
+              </Text>
+              <View style={styles.row}>
+                {loads.map((l) => (
+                  <Text key={`${l.id}-reps`} style={styles.cell}>
+                    {l.enabled ? l.reps : "—"}
+                  </Text>
+                ))}
+              </View>
+              <Text style={{ marginTop: 4, fontSize: 7, color: "#94a3b8" }}>
+                Séries
+              </Text>
+              <View style={styles.row}>
+                {loads.map((l) => (
+                  <Text key={`${l.id}-sets`} style={styles.cell}>
+                    {l.enabled ? `${l.sets}x` : "—"}
                   </Text>
                 ))}
               </View>

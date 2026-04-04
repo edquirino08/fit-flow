@@ -16,7 +16,7 @@ export function LoginPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-slate-500">
+      <div className="flex min-h-screen items-center justify-center text-neutral-500">
         Carregando…
       </div>
     );
@@ -44,37 +44,48 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/80 p-8 shadow-2xl shadow-black/40 backdrop-blur">
-        <h1 className="text-center text-2xl font-semibold tracking-tight text-white">
+      <div className="w-full max-w-md rounded-3xl border border-neutral-200 bg-white p-8 shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
+        <h1 className="text-center text-2xl font-semibold tracking-tight text-neutral-900">
           Fit Flow
         </h1>
-        <p className="mt-1 text-center text-sm text-slate-400">
+        <p className="mt-1 text-center text-sm text-neutral-500">
           Fichas de treino com cargas por fase e PDF
         </p>
 
         {!ready ? (
-          <p className="mt-6 rounded-xl border border-amber-500/30 bg-amber-950/40 p-4 text-sm text-amber-100">
-            Configure <code className="rounded bg-black/30 px-1">VITE_SUPABASE_URL</code>{" "}
-            e <code className="rounded bg-black/30 px-1">VITE_SUPABASE_ANON_KEY</code>{" "}
-            no arquivo <code className="rounded bg-black/30 px-1">frontend/.env</code>{" "}
+          <p className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+            Configure{" "}
+            <code className="rounded bg-amber-100/80 px-1">
+              VITE_SUPABASE_URL
+            </code>{" "}
+            e{" "}
+            <code className="rounded bg-amber-100/80 px-1">
+              VITE_SUPABASE_ANON_KEY
+            </code>{" "}
+            no arquivo{" "}
+            <code className="rounded bg-amber-100/80 px-1">frontend/.env</code>{" "}
             e rode a migration no Supabase. Veja o README.
           </p>
         ) : null}
 
         <form onSubmit={submit} className="mt-8 space-y-4">
           <div>
-            <label className="text-xs font-medium text-slate-400">E-mail</label>
+            <label className="text-xs font-medium text-neutral-600">
+              E-mail
+            </label>
             <input
               type="email"
               autoComplete="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="mt-1 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-neutral-900 focus:border-fit-coral focus:outline-none focus:ring-2 focus:ring-fit-coral/20"
             />
           </div>
           <div>
-            <label className="text-xs font-medium text-slate-400">Senha</label>
+            <label className="text-xs font-medium text-neutral-600">
+              Senha
+            </label>
             <input
               type="password"
               autoComplete={
@@ -84,27 +95,25 @@ export function LoginPage() {
               minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="mt-1 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-neutral-900 focus:border-fit-coral focus:outline-none focus:ring-2 focus:ring-fit-coral/20"
             />
           </div>
-          {error ? (
-            <p className="text-sm text-rose-400">{error}</p>
-          ) : null}
+          {error ? <p className="text-sm text-rose-600">{error}</p> : null}
           <button
             type="submit"
             disabled={!ready || pending}
-            className="w-full rounded-xl bg-emerald-600 py-3 font-medium text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full rounded-xl bg-fit-coral py-3 font-medium text-white shadow-sm transition hover:bg-fit-coral-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             {pending ? "…" : mode === "signin" ? "Entrar" : "Criar conta"}
           </button>
         </form>
-        <p className="mt-4 text-center text-sm text-slate-500">
+        <p className="mt-4 text-center text-sm text-neutral-500">
           {mode === "signin" ? (
             <>
               Novo por aqui?{" "}
               <button
                 type="button"
-                className="text-emerald-400 hover:underline"
+                className="font-medium text-fit-coral hover:underline"
                 onClick={() => setMode("signup")}
               >
                 Criar conta
@@ -115,7 +124,7 @@ export function LoginPage() {
               Já tem conta?{" "}
               <button
                 type="button"
-                className="text-emerald-400 hover:underline"
+                className="font-medium text-fit-coral hover:underline"
                 onClick={() => setMode("signin")}
               >
                 Entrar
@@ -123,8 +132,8 @@ export function LoginPage() {
             </>
           )}
         </p>
-        <p className="mt-6 text-center text-xs text-slate-600">
-          <Link to="/" className="hover:text-slate-400">
+        <p className="mt-6 text-center text-xs text-neutral-400">
+          <Link to="/" className="hover:text-neutral-600">
             Voltar
           </Link>
         </p>

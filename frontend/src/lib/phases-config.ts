@@ -8,6 +8,8 @@ import { z } from "zod";
 const toggleSchema = z.object({
   enabled: z.boolean(),
   pct: z.number().min(0).max(1).optional(),
+  reps: z.string().max(32).optional(),
+  sets: z.number().int().min(1).max(20).optional(),
 });
 
 /** Parse JSONB from DB into a full PhasesConfig. */

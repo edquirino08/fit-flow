@@ -10,3 +10,6 @@ packages/domain/dist/
 .env
 .env.local
 *.log
+
+# Sessão Supabase copiada do navegador (nunca commitar)
+sb-session.json
