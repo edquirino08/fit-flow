@@ -1,4 +1,8 @@
-import { computePhaseLoads, type WorkoutSheet } from "@fit-flow/domain";
+import {
+  computePhaseLoads,
+  type SheetExercise,
+  type WorkoutSheet,
+} from "@fit-flow/domain";
 import {
   Document,
   Page,
@@ -14,8 +18,28 @@ const styles = StyleSheet.create({
     fontFamily: "Helvetica",
     color: "#0f172a",
   },
+  brand: { fontSize: 11, fontFamily: "Helvetica-Bold", color: "#0f172a" },
+  brandSub: { fontSize: 7, color: "#64748b", marginTop: 2 },
+  brandRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 12,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e2e8f0",
+  },
+  groupHead: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: "#475569",
+    marginTop: 8,
+    marginBottom: 6,
+    textTransform: "uppercase",
+  },
   title: { fontSize: 18, marginBottom: 4, fontFamily: "Helvetica-Bold" },
   subtitle: { fontSize: 9, color: "#64748b", marginBottom: 16 },
+  muscleTag: { fontSize: 7, color: "#64748b", marginBottom: 2 },
   card: {
     borderWidth: 1,
     borderColor: "#e2e8f0",
@@ -45,23 +69,50 @@ function fmtKg(n: number | null): string {
   return `${n.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })} kg`;
 }
 
+function groupKey(ex: SheetExercise): string {
+  return ex.muscleGroup ?? "Outros";
+}
+
 export function WorkoutPdfDocument({ sheet }: { sheet: WorkoutSheet }) {
   const exported = sheet.exportedAt ?? new Date().toISOString();
   const dateStr = new Date(exported).toLocaleString("pt-BR");
 
+  const sorted = [...sheet.exercises].sort((a, b) => {
+    const ga = groupKey(a);
+    const gb = groupKey(b);
+    if (ga !== gb) return ga.localeCompare(gb, "pt-BR");
+    return a.name.localeCompare(b.name, "pt-BR");
+  });
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
+        <View style={styles.brandRow}>
+          <View>
+            <Text style={styles.brand}>FIT FLOW</Text>
+            <Text style={styles.brandSub}>Ficha de treino</Text>
+          </View>
+        </View>
         <Text style={styles.title}>{sheet.title}</Text>
         <Text style={styles.subtitle}>
           {sheet.subtitle ? `${sheet.subtitle} · ` : ""}
           Gerado em {dateStr}
         </Text>
-        {sheet.exercises.map((ex) => {
+        {sorted.map((ex, idx) => {
           const loads = computePhaseLoads(ex.finalLoadKg, ex.phases);
+          const g = groupKey(ex);
+          const prevG = idx > 0 ? groupKey(sorted[idx - 1]) : null;
+          const showGroup = g !== prevG;
           return (
-            <View key={ex.id} style={styles.card} wrap={false}>
+            <View key={ex.id} wrap={false}>
+              {showGroup ? (
+                <Text style={styles.groupHead}>{g}</Text>
+              ) : null}
+              <View style={styles.card} wrap={false}>
               <Text style={styles.exerciseTitle}>{ex.name}</Text>
+              {ex.muscleGroup ? (
+                <Text style={styles.muscleTag}>{ex.muscleGroup}</Text>
+              ) : null}
               {ex.techniques.length > 0 ? (
                 <View style={styles.chipRow}>
                   {ex.techniques.map((t) => (
@@ -110,6 +161,7 @@ export function WorkoutPdfDocument({ sheet }: { sheet: WorkoutSheet }) {
                   {ex.notes}
                 </Text>
               ) : null}
+              </View>
             </View>
           );
         })}

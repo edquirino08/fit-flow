@@ -9,6 +9,8 @@ export type SheetExercise = {
   /** Short labels e.g. rest-pause, drop-set */
   techniques: string[];
   notes?: string;
+  /** Grupo muscular quando reconhecido pela biblioteca (PDF / UI). */
+  muscleGroup?: string;
 };
 
 export type WorkoutSheet = {

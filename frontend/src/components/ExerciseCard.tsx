@@ -1,3 +1,6 @@
+import { AiSuggestButton } from "@/components/AiSuggestButton";
+import { ExerciseNameCombobox } from "@/components/ExerciseNameCombobox";
+import { PhaseExplainButton } from "@/components/PhaseExplainButton";
 import {
   computePhaseLoads,
   DEFAULT_PHASE_REPS,
@@ -93,45 +96,53 @@ export function ExerciseCard({ index, exercise, onChange, onRemove }: Props) {
   }
 
   return (
-    <article className="rounded-2xl border border-neutral-200 bg-white p-5 shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+    <article className="rounded-[2rem] border border-black/[0.08] bg-white p-5 shadow-[0_6px_32px_rgba(0,0,0,0.05)] sm:p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <span className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+        <span className="text-xs font-semibold uppercase tracking-widest text-neutral-500">
           Exercício {index + 1}
         </span>
         <button
           type="button"
           onClick={onRemove}
-          className="text-xs text-rose-600 hover:text-rose-500"
+          className="text-xs font-semibold uppercase tracking-wider text-rose-600 hover:text-rose-500"
+          aria-label={`Remover exercício ${index + 1}`}
         >
           Remover
         </button>
       </div>
-      <input
-        type="text"
+      <ExerciseNameCombobox
+        id={`exercise-name-${exercise.clientId}`}
         value={exercise.name}
-        onChange={(e) => onChange({ ...exercise, name: e.target.value })}
+        onChange={(name) => onChange({ ...exercise, name })}
         placeholder="Nome (ex.: Supino inclinado halteres)"
-        className="mt-2 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2.5 text-base font-medium text-neutral-900 placeholder:text-neutral-400 focus:border-fit-coral focus:outline-none focus:ring-2 focus:ring-fit-coral/20"
       />
       <div className="mt-3 flex flex-wrap gap-2">
         {PHASE_ORDER.map((id) => (
           <label
             key={id}
-            className="flex cursor-pointer items-center gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-2.5 py-1.5 text-xs text-neutral-700 hover:border-fit-coral/40"
+            className={`flex cursor-pointer items-center gap-2 rounded-2xl border px-2.5 py-2 text-xs font-medium transition ${
+              exercise.phases[id].enabled
+                ? "border-ink/20 bg-accent/25 text-ink"
+                : "border-black/10 bg-surface text-neutral-600 hover:border-black/20"
+            }`}
           >
             <input
               type="checkbox"
               checked={exercise.phases[id].enabled}
               onChange={(e) => setPhase(id, e.target.checked)}
-              className="rounded border-neutral-300 text-fit-coral focus:ring-fit-coral/30"
+              className="rounded border-neutral-400 text-ink focus:ring-ink/30"
+              aria-label={`${exercise.phases[id].enabled ? "Desativar" : "Ativar"} fase ${PHASE_LABELS[id]} do exercício ${index + 1}`}
             />
-            {PHASE_LABELS[id]}
+            <span className="flex items-center gap-0.5">
+              {PHASE_LABELS[id]}
+              <PhaseExplainButton phaseLabel={PHASE_LABELS[id]} />
+            </span>
           </label>
         ))}
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
         <label className="block">
-          <span className="text-xs font-medium text-neutral-500">
+          <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
             Carga final (kg)
           </span>
           <input
@@ -142,13 +153,31 @@ export function ExerciseCard({ index, exercise, onChange, onRemove }: Props) {
               onChange({ ...exercise, finalLoad: e.target.value })
             }
             placeholder="20"
-            className="mt-1 w-full rounded-xl border border-amber-200/80 bg-amber-50/50 px-3 py-2 font-mono text-lg text-neutral-900 placeholder:text-amber-800/40 focus:border-fit-coral focus:outline-none focus:ring-2 focus:ring-fit-coral/20"
+            className="focus-ring mt-1.5 w-full rounded-2xl border border-accent/50 bg-accent/15 px-3 py-2.5 font-mono text-lg text-ink placeholder:text-neutral-400"
           />
         </label>
-        <label className="col-span-2 block sm:col-span-2">
-          <span className="text-xs font-medium text-neutral-500">
-            Técnicas (separe por vírgula)
-          </span>
+        <div className="col-span-2 flex flex-col gap-2 sm:col-span-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
+              Técnicas (separe por vírgula)
+            </span>
+            <AiSuggestButton
+              type="techniques"
+              payload={{
+                exerciseName: exercise.name,
+                context: exercise.notes,
+              }}
+              label="Sugerir"
+              onApply={(t) => {
+                const flat = t.replace(/\n+/g, ", ").replace(/^[-•]\s*/gm, "");
+                const cur = exercise.techniques.trim();
+                onChange({
+                  ...exercise,
+                  techniques: cur ? `${cur}, ${flat}` : flat,
+                });
+              }}
+            />
+          </div>
           <input
             type="text"
             value={exercise.techniques}
@@ -156,35 +185,39 @@ export function ExerciseCard({ index, exercise, onChange, onRemove }: Props) {
               onChange({ ...exercise, techniques: e.target.value })
             }
             placeholder="rest-pause, drop set, pico 2s"
-            className="mt-1 w-full rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-fit-coral focus:outline-none focus:ring-2 focus:ring-fit-coral/20"
+            className="focus-ring w-full rounded-2xl border border-black/10 bg-surface px-3 py-2.5 text-sm text-neutral-800 placeholder:text-neutral-400"
           />
-        </label>
+        </div>
       </div>
-      <div className="mt-4 overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-50/50">
+      <div className="mt-4 overflow-x-auto rounded-2xl border border-black/10 bg-surface/80">
         <table className="w-full min-w-[480px] text-left text-sm">
           <thead>
-            <tr className="border-b border-neutral-200 bg-white text-xs font-medium uppercase tracking-wide text-neutral-500">
-              <th className="px-2 py-2 w-14" />
+            <tr className="border-b border-black/10 bg-white text-xs font-semibold uppercase tracking-wider text-neutral-500">
+              <th className="w-14 px-2 py-2.5" />
               {loads.map((l) => (
-                <th key={l.id} className="px-2 py-2">
+                <th key={l.id} className="px-2 py-2.5">
                   {PHASE_LABELS[l.id]}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            <tr className="border-b border-neutral-100 font-mono text-neutral-800">
-              <td className="px-2 py-2 text-xs font-medium text-neutral-500">Carga</td>
+            <tr className="border-b border-black/5 font-mono text-neutral-800">
+              <td className="px-2 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                Carga
+              </td>
               {loads.map((l) => (
-                <td key={l.id} className="px-2 py-2">
+                <td key={l.id} className="px-2 py-2.5">
                   {l.enabled ? `${fmtKg(l.kg)} kg` : "—"}
                 </td>
               ))}
             </tr>
-            <tr className="border-b border-neutral-100 text-neutral-800">
-              <td className="px-2 py-2 text-xs font-medium text-neutral-500">Reps</td>
+            <tr className="border-b border-black/5 text-neutral-800">
+              <td className="px-2 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                Reps
+              </td>
               {loads.map((l) => (
-                <td key={l.id} className="px-2 py-2 align-top">
+                <td key={l.id} className="px-2 py-2.5 align-top">
                   {l.enabled ? (
                     <input
                       type="text"
@@ -192,7 +225,7 @@ export function ExerciseCard({ index, exercise, onChange, onRemove }: Props) {
                       value={exercise.phases[l.id].reps ?? ""}
                       placeholder={DEFAULT_PHASE_REPS[l.id]}
                       onChange={(e) => setReps(l.id, e.target.value)}
-                      className="w-full min-w-[3rem] rounded-lg border border-neutral-200 bg-white px-2 py-1 text-center text-sm text-fit-coral placeholder:text-neutral-400 focus:border-fit-coral focus:outline-none focus:ring-1 focus:ring-fit-coral/30"
+                      className="focus-ring w-full min-w-[3rem] rounded-xl border border-black/10 bg-white px-2 py-1.5 text-center text-sm font-semibold text-ink placeholder:text-neutral-400"
                     />
                   ) : (
                     <span className="text-neutral-400">—</span>
@@ -201,9 +234,11 @@ export function ExerciseCard({ index, exercise, onChange, onRemove }: Props) {
               ))}
             </tr>
             <tr className="text-neutral-800">
-              <td className="px-2 py-2 text-xs font-medium text-neutral-500">Séries</td>
+              <td className="px-2 py-2.5 text-xs font-semibold uppercase tracking-wider text-neutral-500">
+                Séries
+              </td>
               {loads.map((l) => (
-                <td key={l.id} className="px-2 py-2 align-top">
+                <td key={l.id} className="px-2 py-2.5 align-top">
                   {l.enabled ? (
                     <input
                       type="text"
@@ -211,7 +246,7 @@ export function ExerciseCard({ index, exercise, onChange, onRemove }: Props) {
                       value={exercise.phases[l.id].sets ?? ""}
                       placeholder={String(DEFAULT_PHASE_SETS[l.id])}
                       onChange={(e) => setSets(l.id, e.target.value)}
-                      className="w-full min-w-[3rem] rounded-lg border border-neutral-200 bg-white px-2 py-1 text-center text-sm text-fit-coral placeholder:text-neutral-400 focus:border-fit-coral focus:outline-none focus:ring-1 focus:ring-fit-coral/30"
+                      className="focus-ring w-full min-w-[3rem] rounded-xl border border-black/10 bg-white px-2 py-1.5 text-center text-sm font-semibold text-ink placeholder:text-neutral-400"
                     />
                   ) : (
                     <span className="text-neutral-400">—</span>
@@ -222,15 +257,15 @@ export function ExerciseCard({ index, exercise, onChange, onRemove }: Props) {
           </tbody>
         </table>
       </div>
-      <label className="mt-3 block">
-        <span className="text-xs font-medium text-neutral-500">
+      <label className="mt-4 block">
+        <span className="text-xs font-semibold uppercase tracking-wider text-neutral-500">
           Observações
         </span>
         <textarea
           value={exercise.notes}
           onChange={(e) => onChange({ ...exercise, notes: e.target.value })}
           rows={2}
-          className="mt-1 w-full resize-none rounded-xl border border-neutral-200 bg-neutral-50 px-3 py-2 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-fit-coral focus:outline-none focus:ring-2 focus:ring-fit-coral/20"
+          className="focus-ring mt-1.5 w-full resize-none rounded-2xl border border-black/10 bg-surface px-3 py-2.5 text-sm text-neutral-800 placeholder:text-neutral-400"
           placeholder="Opcional"
         />
       </label>

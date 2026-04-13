@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Fit Flow">
   <rect width="64" height="64" rx="18" fill="#0a0a0a"/>
+  <!-- Fluxo + F integrados -->
   <path fill="#dfff4a" d="M21 17h22v5.5H26.5v7.5H41v5.5H26.5v11H21V17Z"/>
   <path stroke="#dfff4a" stroke-width="1.75" stroke-linecap="round" fill="none" d="M43.5 21.5c3.5 3.8 3.5 10.2 0 14M47 19.5c5 5.2 5 15.8 0 21" opacity="0.9"/>
+  <!-- Estrela de 4 pontas minimalista -->
   <path fill="#dfff4a" d="m46 44 2-2 2 2-2 2-2-2Z" opacity="0.95"/>
 </svg>

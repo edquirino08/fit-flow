@@ -10,18 +10,18 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.svg"],
+      includeAssets: ["favicon.svg", "fit-flow-mark.svg"],
       manifest: {
         name: "Fit Flow",
         short_name: "Fit Flow",
         description: "Fichas de treino com cargas por fase e exportação PDF",
-        theme_color: "#0f172a",
-        background_color: "#020617",
+        theme_color: "#0a0a0a",
+        background_color: "#f2f2f2",
         display: "standalone",
         orientation: "portrait",
         icons: [
           {
-            src: "/vite.svg",
+            src: "/favicon.svg",
             sizes: "any",
             type: "image/svg+xml",
             purpose: "any",
