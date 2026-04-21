@@ -181,31 +181,33 @@ export function WorkoutEditPage() {
         if (e2) throw e2;
       }
 
-      for (let i = 0; i < exercises.length; i++) {
-        const ex = exercises[i];
-        const payload = {
-          workout_id: id,
-          sort_order: i,
-          exercise_name: ex.name.trim() || "Exercício",
-          final_load_kg: parseFinalLoad(ex.finalLoad),
-          phases_config: toPhasesJson(ex.phases),
-          techniques: ex.techniques
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean),
-          notes: ex.notes.trim() || null,
-        };
-        if (ex.dbId) {
-          const { error: e3 } = await supabase
-            .from("workout_exercises")
-            .update(payload)
-            .eq("id", ex.dbId);
-          if (e3) throw e3;
-        } else {
-          const { error: e4 } = await supabase
-            .from("workout_exercises")
-            .insert(payload);
-          if (e4) throw e4;
+      if (exercises.length > 0) {
+        const payloads = exercises.map((ex, i) => {
+          const base = {
+            workout_id: id,
+            sort_order: i,
+            exercise_name: ex.name.trim() || "Exercício",
+            final_load_kg: parseFinalLoad(ex.finalLoad),
+            phases_config: toPhasesJson(ex.phases),
+            techniques: ex.techniques
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean),
+            notes: ex.notes.trim() || null,
+          };
+          return ex.dbId ? { id: ex.dbId, ...base } : base;
+        });
+
+        const { data: upserted, error: e3 } = await supabase
+          .from("workout_exercises")
+          .upsert(payloads, { onConflict: "id" })
+          .select("id");
+        if (e3) throw e3;
+
+        if ((upserted?.length ?? 0) !== payloads.length) {
+          throw new Error(
+            `Falha ao salvar exercícios: ${upserted?.length ?? 0} de ${payloads.length} linhas persistidas.`,
+          );
         }
       }
     },
