@@ -8,6 +8,7 @@ import App from "./App.tsx";
 // serves index.html for those missing /assets/*.js requests (wrong MIME). Reload once a
 // new worker is installed while we already had a controller (update path, not first visit).
 if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  // Avoid top-level await: Vite's production target (es2020) does not emit it.
   void (async () => {
     const registration = await navigator.serviceWorker.ready;
     registration.addEventListener("updatefound", () => {
