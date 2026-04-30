@@ -77,12 +77,8 @@ export function WorkoutPdfDocument({ sheet }: { sheet: WorkoutSheet }) {
   const exported = sheet.exportedAt ?? new Date().toISOString();
   const dateStr = new Date(exported).toLocaleString("pt-BR");
 
-  const sorted = [...sheet.exercises].sort((a, b) => {
-    const ga = groupKey(a);
-    const gb = groupKey(b);
-    if (ga !== gb) return ga.localeCompare(gb, "pt-BR");
-    return a.name.localeCompare(b.name, "pt-BR");
-  });
+  /** Mesma ordem da ficha no editor (sort_order); não agrupar por nome/grupo no PDF. */
+  const exercises = sheet.exercises;
 
   return (
     <Document>
@@ -98,10 +94,10 @@ export function WorkoutPdfDocument({ sheet }: { sheet: WorkoutSheet }) {
           {sheet.subtitle ? `${sheet.subtitle} · ` : ""}
           Gerado em {dateStr}
         </Text>
-        {sorted.map((ex, idx) => {
+        {exercises.map((ex, idx) => {
           const loads = computePhaseLoads(ex.finalLoadKg, ex.phases);
           const g = groupKey(ex);
-          const prevG = idx > 0 ? groupKey(sorted[idx - 1]) : null;
+          const prevG = idx > 0 ? groupKey(exercises[idx - 1]) : null;
           const showGroup = g !== prevG;
           return (
             <View key={ex.id} wrap={false}>
